@@ -2,7 +2,6 @@ package com.example.messengerservice;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,7 +15,7 @@ import android.widget.Chronometer;
 import java.lang.ref.WeakReference;
 
 public class MessengerService extends Service {
-    private static String TAG = "MessengerService";
+    private static String LOG_TAG = "MessengerService";
     private Chronometer mChronometer;
     static final int MSG_GET_TIMESTAMP = 1000;
 
@@ -27,13 +26,14 @@ public class MessengerService extends Service {
             mService = new WeakReference<MessengerService>(service);
         }
 
-        @Override public void handleMessage(Message msg) {
+        @Override
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_GET_TIMESTAMP:
                     Messenger activityMessenger = msg.replyTo;
                     Bundle b = new Bundle();
                     b.putString("timestamp", getTimestamp());
-                    Message replyMsg= Message.obtain(null, MSG_GET_TIMESTAMP);
+                    Message replyMsg = Message.obtain(null, MSG_GET_TIMESTAMP);
                     replyMsg.setData(b);
                     try {
                         activityMessenger.send(replyMsg);
@@ -49,32 +49,37 @@ public class MessengerService extends Service {
 
     final Messenger mMessenger = new Messenger(new BoundServiceHandler(this));
 
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
-        Log.v(TAG, "in onCreate");
+        Log.v(LOG_TAG, "in onCreate");
         mChronometer = new Chronometer(this);
         mChronometer.setBase(SystemClock.elapsedRealtime());
         mChronometer.start();
     }
 
-    @Override public IBinder onBind(Intent intent) {
-        Log.v(TAG, "in onBind");
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.v(LOG_TAG, "in onBind");
         return mMessenger.getBinder();
     }
 
-    @Override public void onRebind(Intent intent) {
-        Log.v(TAG, "in onRebind");
+    @Override
+    public void onRebind(Intent intent) {
+        Log.v(LOG_TAG, "in onRebind");
         super.onRebind(intent);
     }
 
-    @Override public boolean onUnbind(Intent intent) {
-        Log.v(TAG, "in onUnbind");
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.v(LOG_TAG, "in onUnbind");
         return true;
     }
 
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         super.onDestroy();
-        Log.v(TAG, "in onDestroy");
+        Log.v(LOG_TAG, "in onDestroy");
         mChronometer.stop();
     }
 
@@ -90,4 +95,5 @@ public class MessengerService extends Service {
         return String.format("%02d:%02d:%02d:%03d", hours, minutes,
                 seconds, millis);
     }
+
 }
